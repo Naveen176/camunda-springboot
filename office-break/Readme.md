@@ -9,9 +9,8 @@ To get started with the project, follow the instructions below.
 ### Starting the Office Process
 To start the office process, make a POST request to the following endpoint:
 - POST: http://localhost:8080/startOffice
-- 
 **Request Body**:
--json
+- 
   {
     "name": "Kumar"
 }
