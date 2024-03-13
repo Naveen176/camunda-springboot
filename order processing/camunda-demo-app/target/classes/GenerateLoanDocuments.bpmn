@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_03tycbd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.19.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+  <bpmn:process id="GenerateLoanDocuments" name="GenerateLoanDocuments" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_03sai00</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_03sai00" sourceRef="StartEvent_1" targetRef="Activity_1yorx9o" />
+    <bpmn:serviceTask id="Activity_1yorx9o" name="Create Loan Agreement" camunda:class="com.nagarro.services.LoanAggreement">
+      <bpmn:incoming>Flow_03sai00</bpmn:incoming>
+      <bpmn:outgoing>Flow_1cbll1b</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1cbll1b" sourceRef="Activity_1yorx9o" targetRef="Activity_1jnwi9v" />
+    <bpmn:serviceTask id="Activity_1jnwi9v" name="Calculate Interest Rates" camunda:class="com.nagarro.services.InterestRates">
+      <bpmn:incoming>Flow_1cbll1b</bpmn:incoming>
+      <bpmn:outgoing>Flow_13251nm</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_13251nm" sourceRef="Activity_1jnwi9v" targetRef="Activity_0zn8hd0" />
+    <bpmn:serviceTask id="Activity_0zn8hd0" name="Finalized Documents" camunda:class="com.nagarro.services.FinalDocument">
+      <bpmn:incoming>Flow_13251nm</bpmn:incoming>
+      <bpmn:outgoing>Flow_0tc3s4u</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_0ujig3d">
+      <bpmn:incoming>Flow_0tc3s4u</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0tc3s4u" sourceRef="Activity_0zn8hd0" targetRef="Event_0ujig3d" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="GenerateLoanDocuments">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gphi8o_di" bpmnElement="Activity_1yorx9o">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1oxdv7g_di" bpmnElement="Activity_1jnwi9v">
+        <dc:Bounds x="430" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vseej1_di" bpmnElement="Activity_0zn8hd0">
+        <dc:Bounds x="590" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ujig3d_di" bpmnElement="Event_0ujig3d">
+        <dc:Bounds x="752" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_03sai00_di" bpmnElement="Flow_03sai00">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cbll1b_di" bpmnElement="Flow_1cbll1b">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="430" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13251nm_di" bpmnElement="Flow_13251nm">
+        <di:waypoint x="530" y="117" />
+        <di:waypoint x="590" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tc3s4u_di" bpmnElement="Flow_0tc3s4u">
+        <di:waypoint x="690" y="117" />
+        <di:waypoint x="752" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

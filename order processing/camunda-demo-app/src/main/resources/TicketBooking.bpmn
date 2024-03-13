@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1d6vrxd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.19.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+  <bpmn:process id="TicketBooking" name="TicketBooking" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_086xxzi</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_07plazd">
+      <bpmn:incoming>Flow_1ye45wg</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_086xxzi" sourceRef="StartEvent_1" targetRef="request" />
+    <bpmn:sequenceFlow id="Flow_0978rkl" sourceRef="request" targetRef="CheckAvailability" />
+    <bpmn:sequenceFlow id="Flow_1o98c5w" sourceRef="CheckAvailability" targetRef="availabilityflow" />
+    <bpmn:userTask id="request" name="Request Ticket" camunda:assignee="user">
+      <bpmn:incoming>Flow_086xxzi</bpmn:incoming>
+      <bpmn:outgoing>Flow_0978rkl</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="CheckAvailability" name="Check availability" camunda:class="com.nagarro.services.TicketAvailability">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0978rkl</bpmn:incoming>
+      <bpmn:outgoing>Flow_1o98c5w</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_1gasv5d" name="Confirm Booking" camunda:assignee="user">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="confirm" label="confirm" type="string" defaultValue="yes" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_01m5azu</bpmn:incoming>
+      <bpmn:outgoing>Flow_1hmg915</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="availabilityflow">
+      <bpmn:incoming>Flow_1o98c5w</bpmn:incoming>
+      <bpmn:outgoing>Flow_01m5azu</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1ye45wg</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_01m5azu" name="available" sourceRef="availabilityflow" targetRef="Activity_1gasv5d">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${status=='available'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1ye45wg" sourceRef="availabilityflow" targetRef="Event_07plazd">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${status=='not_available'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="TotalAmount" name="Calculate Price" camunda:class="com.nagarro.services.CalculateAmount">
+      <bpmn:incoming>Flow_0e47rf7</bpmn:incoming>
+      <bpmn:outgoing>Flow_1skmt6g</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Confirmation">
+      <bpmn:incoming>Flow_1hmg915</bpmn:incoming>
+      <bpmn:outgoing>bookingflow</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0e47rf7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Event_14red0e">
+      <bpmn:incoming>bookingflow</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="bookingflow" sourceRef="Confirmation" targetRef="Event_14red0e">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${confirm == 'no'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1hmg915" sourceRef="Activity_1gasv5d" targetRef="Confirmation" />
+    <bpmn:sequenceFlow id="Flow_0e47rf7" name="yes" sourceRef="Confirmation" targetRef="TotalAmount">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${confirm == 'yes'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_1guxqo5">
+      <bpmn:incoming>Flow_06qcw29</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_06qcw29" sourceRef="Payment" targetRef="Event_1guxqo5" />
+    <bpmn:sequenceFlow id="Flow_1skmt6g" sourceRef="TotalAmount" targetRef="Payment" />
+    <bpmn:userTask id="Payment" name="Make Payment" camunda:assignee="user">
+      <bpmn:incoming>Flow_1skmt6g</bpmn:incoming>
+      <bpmn:outgoing>Flow_06qcw29</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="TicketBooking">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_004pv4i_di" bpmnElement="request">
+        <dc:Bounds x="260" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0q934wx_di" bpmnElement="CheckAvailability">
+        <dc:Bounds x="400" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0z18ylj_di" bpmnElement="availabilityflow" isMarkerVisible="true">
+        <dc:Bounds x="545" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1eawbak_di" bpmnElement="Activity_1gasv5d">
+        <dc:Bounds x="520" y="230" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07plazd_di" bpmnElement="Event_07plazd">
+        <dc:Bounds x="672" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_03i6jji_di" bpmnElement="Confirmation" isMarkerVisible="true">
+        <dc:Bounds x="665" y="245" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14red0e_di" bpmnElement="Event_14red0e">
+        <dc:Bounds x="772" y="252" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qjorw9_di" bpmnElement="TotalAmount">
+        <dc:Bounds x="640" y="360" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1guxqo5_di" bpmnElement="Event_1guxqo5">
+        <dc:Bounds x="942" y="382" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0av85xf_di" bpmnElement="Payment">
+        <dc:Bounds x="790" y="360" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_086xxzi_di" bpmnElement="Flow_086xxzi">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="260" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0978rkl_di" bpmnElement="Flow_0978rkl">
+        <di:waypoint x="360" y="117" />
+        <di:waypoint x="400" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o98c5w_di" bpmnElement="Flow_1o98c5w">
+        <di:waypoint x="500" y="117" />
+        <di:waypoint x="545" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01m5azu_di" bpmnElement="Flow_01m5azu">
+        <di:waypoint x="570" y="142" />
+        <di:waypoint x="570" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="578" y="183" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ye45wg_di" bpmnElement="Flow_1ye45wg">
+        <di:waypoint x="595" y="117" />
+        <di:waypoint x="672" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hmg915_di" bpmnElement="Flow_1hmg915">
+        <di:waypoint x="620" y="270" />
+        <di:waypoint x="665" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19tkeh9_di" bpmnElement="bookingflow">
+        <di:waypoint x="715" y="270" />
+        <di:waypoint x="772" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="736" y="252" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0e47rf7_di" bpmnElement="Flow_0e47rf7">
+        <di:waypoint x="690" y="295" />
+        <di:waypoint x="690" y="360" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="696" y="325" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1skmt6g_di" bpmnElement="Flow_1skmt6g">
+        <di:waypoint x="740" y="400" />
+        <di:waypoint x="790" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06qcw29_di" bpmnElement="Flow_06qcw29">
+        <di:waypoint x="890" y="400" />
+        <di:waypoint x="942" y="400" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
