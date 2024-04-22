@@ -1,0 +1,10 @@
+server:
+  port: 8181
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
+      firstName: Migration
+    filter:
+      create: All tasks
